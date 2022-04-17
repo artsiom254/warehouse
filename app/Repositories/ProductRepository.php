@@ -27,12 +27,12 @@ class ProductRepository
         foreach ($products as $productKey => $product) {
             $productsResult[$productKey]['max_quantity'] = self::productMaxQuantity($product);
         }
+
         $articlesAvailable = ArticleRepository::articles();
         $products = $products->toArray();
         while (count($products) > 0) {
-
             foreach ($products as $productKey => $product) {
-                if (self::articlesInStock($product['articles'], $articlesAvailable)) {
+                if (ArticleRepository::articlesInStock($product['articles'], $articlesAvailable)) {
                     foreach ($product['articles'] as $productArticle) {
                         $articlesAvailable[$productArticle['article_id']]['stock'] -= $productArticle['amount'];
                     }
@@ -62,25 +62,6 @@ class ProductRepository
             return min($productArticlesQuantities);
         }
         return 0;
-    }
-
-    /**
-     * Check if given articles are in stock
-     * @param $productArticles
-     * @param $articles
-     * @return bool
-     */
-    public static function articlesInStock($productArticles, $articles): bool
-    {
-        if ($productArticles && count($productArticles) > 0) {
-            foreach ($productArticles as $productArticle) {
-                if ($productArticle['amount'] > $articles[$productArticle['article_id']]['stock']) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     /**

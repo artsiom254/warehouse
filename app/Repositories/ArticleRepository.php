@@ -46,6 +46,7 @@ class ArticleRepository
         foreach ($productArticles as $productArticle) {
             $productArticlesAmount[$productArticle['article_id']] = $productArticle['amount'];
         }
+
         $articles = ArticleRepository::articlesByIds($productArticlesIds);
 
         $articlesResult = [];
@@ -54,5 +55,24 @@ class ArticleRepository
             $articlesResult[] = $article;
         }
         return $articlesResult;
+    }
+
+    /**
+     * Check if given articles are in stock
+     * @param $productArticles
+     * @param $articles
+     * @return bool
+     */
+    public static function articlesInStock($productArticles, $articles): bool
+    {
+        if ($productArticles && count($productArticles) > 0) {
+            foreach ($productArticles as $productArticle) {
+                if ($productArticle['amount'] > $articles[$productArticle['article_id']]['stock']) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }
